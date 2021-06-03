@@ -15,7 +15,7 @@ bool Socket::create() {
   if (!is_valid())
     return (false);
 
-  // // TIME_WAIT - argh
+  // socket for reusing
   int on = 1;
   if ( setsockopt ( m_socket, SOL_SOCKET, SO_REUSEADDR, ( const char* ) &on, sizeof ( on ) ) == -1 )
     return false;
