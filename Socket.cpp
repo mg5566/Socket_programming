@@ -20,9 +20,10 @@ bool Socket::create() {
   if ( setsockopt ( m_socket, SOL_SOCKET, SO_REUSEADDR, ( const char* ) &on, sizeof ( on ) ) == -1 )
     return false;
 
+/*
   // SET NON-BLOCKING
   fcntl(m_socket, F_SETFL, O_NONBLOCK);
-
+*/
   return (true);
 }
 
@@ -78,6 +79,7 @@ bool Socket::send(const std::string mes) const {
 
 int Socket::recv(std::string &mes) const {
   char buffer[MAX_BUFFER_SIZE + 1];
+  memset(&buffer, 0x00, MAX_BUFFER_SIZE + 1);
   int status = ::recv(m_socket, buffer, MAX_BUFFER_SIZE, 0);
 
   if (status == -1) {

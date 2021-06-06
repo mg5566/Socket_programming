@@ -8,7 +8,7 @@
 
 #include "Socket.hpp"
 
-#define PORT 123456
+#define PORT 1234
 
 int main(void) {
   Socket socket;
