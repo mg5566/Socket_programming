@@ -12,9 +12,9 @@
 
 class Socket {
   private:
-    int m_socket;
     sockaddr_in m_addr;
   public:
+    int m_socket;
     Socket();
     virtual ~Socket();
 

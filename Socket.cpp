@@ -60,10 +60,10 @@ bool Socket::listen() const {
 
 bool Socket::accept(Socket &new_socket) const {
   int addr_len = 0;
-  std::cout << "test addr_len : " << addr_len << std::endl;
+  //std::cout << "before set addr test addr_len : " << addr_len << std::endl;
   // client 의 socket fd 를 받아옵니다.
   new_socket.m_socket = ::accept(m_socket, (sockaddr *)&m_addr, (socklen_t *)&addr_len);
-  std::cout << "test addr_len : " << addr_len << std::endl;
+  //std::cout << "after set addr  test addr_len : " << addr_len << std::endl;
 
   if (new_socket.m_socket == -1)
     return (false);
@@ -71,6 +71,11 @@ bool Socket::accept(Socket &new_socket) const {
 }
 
 bool Socket::send(const std::string mes) const {
+  // mes.data() 를 넣어주는 게 맞는지 잘 모르겠습니다....
+  // cplusplus 의 example 에서는 data 를 넣어서 사용하긴 합니다.
+  // prototype
+  // const char* data() const;
+  // http://cplusplus.com/reference/string/string/data/
   int status = ::send(m_socket, mes.data(), mes.size(), 0);
   if (status == -1)
     return (false);
@@ -79,6 +84,7 @@ bool Socket::send(const std::string mes) const {
 
 int Socket::recv(std::string &mes) const {
   char buffer[MAX_BUFFER_SIZE + 1];
+  // memset 을 안하면 자꾸 이상한 값이 같이 출력되는 문제를 경험할 수 있습니다.
   memset(&buffer, 0x00, MAX_BUFFER_SIZE + 1);
   int status = ::recv(m_socket, buffer, MAX_BUFFER_SIZE, 0);
 
