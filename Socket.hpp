@@ -9,6 +9,7 @@
 
 #define MAX_BUFFER_SIZE 1024
 #define MAX_CONNECTOR 10
+//#define MAX_CONNECTOR 1
 
 class Socket {
   private:
