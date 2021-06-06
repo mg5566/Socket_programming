@@ -43,7 +43,7 @@ bool Socket::bind(const int port) {
   return (true);
 }
 
-bool Socket::listen() const {
+bool Socket::listen(const int server_backlog) const {
   if (!is_valid())
     return (false);
 
@@ -51,7 +51,8 @@ bool Socket::listen() const {
 
   // Socket file descriptor | max connetor
   // 향후 nginx configuration 을 보고 수정이 필요할듯?!
-  listen_result = ::listen(m_socket, MAX_CONNECTOR);
+  //listen_result = ::listen(m_socket, MAX_CONNECTOR);
+  listen_result = ::listen(m_socket, server_backlog);
 
   if (listen_result == -1)
     return (false);
