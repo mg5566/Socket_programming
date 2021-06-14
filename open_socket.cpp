@@ -3,6 +3,7 @@
 #include <sys/socket.h>  // socket
 #include <sys/types.h>
 #include <netinet/in.h>  // sockaddr_in
+#include <fcntl.h>  // fcntl
 
 #define PORT 1234
 #define BACK_LOG 10
@@ -13,15 +14,19 @@ int main(void) {
     // create socket
     socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     std::cout << "socket creation success" << std::endl;
-    /*
-    ** for test socket file descriptor
+
+    // for test socket file descriptor
     if (socket_fd < 0) {
         std::cout << "Error: can't open socket" << std::endl;
         close(socket_fd);
     }
     else
         std::cout << "Socket file descriptor : " << socket_fd << std::endl;
-    */
+
+    // socket for reusing
+    int on = 1;
+    if ( setsockopt (socket_fd, SOL_SOCKET, SO_REUSEADDR, ( const char* ) &on, sizeof ( on ) ) == -1 )
+        return (-1);
 
     // bind socket using port
     sockaddr_in addr;
@@ -40,23 +45,82 @@ int main(void) {
         return (-1);
     }
     std::cout << "finish listen 10 connection available" << std::endl;
-    
-    /* accept */
-    int client_fd;
-    int addr_len;
 
-    client_fd = accept(socket_fd, (sockaddr *)&addr, (socklen_t *)&addr_len);
-    if (client_fd == -1) {
-        close(socket_fd);
-        close(client_fd);
-        return (-1);
+    // set fd_set
+    fd_set readfds, allfds;
 
+    FD_ZERO(&readfds);
+    FD_SET(socket_fd, &readfds);
+
+    int max_fd;
+    struct timeval tv;
+
+    max_fd = socket_fd;
+    tv.tv_sec = 2;
+    tv.tv_usec = 0;
+    fcntl(socket_fd, F_SETFL, O_NONBLOCK);
+    while (1) {
+        allfds = readfds;
+        /*
+        std::cout << "max fd is " << max_fd << std::endl;
+        // block
+        int select_result = select(max_fd + 1, &allfds, NULL, NULL, NULL);
+        // non-blocking
+        //int select_result = select(max_fd + 1, &allfds, NULL, NULL, &tv);
+        std::cout << "select result is " << select_result << std::endl;
+
+        if (FD_ISSET(socket_fd, &allfds)) {
+            std::cout << "socket_fd is caught" << std::endl;
+            int addr_len = 0;
+            int new_client = accept(socket_fd, (sockaddr *)&addr, (socklen_t *)&addr_len);
+            std::cout << "success accept, create new_client " << new_client << std::endl;
+            FD_SET(new_client, &readfds);
+
+            if (new_client > max_fd) {
+                max_fd = new_client;
+                std::cout << "update max_fd" << std::endl;
+            }
+        }
+        */
+        int addr_len = 0;
+        int new_client = accept(socket_fd, (sockaddr *)&addr, (socklen_t *)&addr_len);
+        std::cout << "success accept, create new_client " << new_client << std::endl;
+        std::cout << "max_fd " << max_fd << std::endl;
+        if (new_client > max_fd) {
+            max_fd = new_client;
+            std::cout << "update max_fd" << std::endl;
+        }
+        FD_SET(new_client, &readfds);
+        allfds = readfds;
+        /*
+        int select_result = select(max_fd + 1, &allfds, NULL, NULL, NULL);
+        (void) select_result;
+        */
+        for (int i = 3; i < max_fd + 1; ++i) {
+            /*
+            std::cout << "i = " << i << std::endl;
+            char buffer[100];
+            memset(buffer, 0x00, 100);
+            int res;
+            while ((res = read(i, &buffer, 100)) > 0) {
+                std::cout << "res : " << res << std::endl;
+                if (res > 0) buffer[res] = '\0';
+                std::cout << "recv : " << buffer << std::endl;
+            }
+            */
+            if (FD_ISSET(i, &allfds)) {
+                // recv
+                char buffer[100];
+                memset(buffer, 0x00, 100);
+                int res = read(i, &buffer, 100);
+                std::cout << "res : " << res << std::endl;
+                if (res > 0) buffer[res] = '\0';
+                std::cout << "recv : " << buffer << std::endl;
+            }
+        }
+        // close connection
+        //close(new_client);
     }
-
-
-
-
     
-
     return (0);
 }
