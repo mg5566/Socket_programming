@@ -123,6 +123,7 @@ int main(void) {
                 std::cout << "recv : " << buffer << std::endl;
             }
             */
+            // request message
             if (FD_ISSET(i, &allfds)) {
                 std::cout << "i = " << i << std::endl;
                 // recv
@@ -131,7 +132,7 @@ int main(void) {
                 int res = read(i, &buffer, 10000);
                 std::cout << "res : " << res << std::endl;
                 if (res > 0) buffer[res] = '\0';
-                std::cout << "recv : " << buffer << std::endl;
+                std::cout << "recv : " << std::endl << buffer << std::endl;
             }
         }
         // close connection
