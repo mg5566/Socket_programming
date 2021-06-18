@@ -8,7 +8,8 @@ class Request_Parse {
  private:
   //std::vector<std::string> message_vector;
   std::string origin_message;
-  Request_Message requeset_message;
+  //Request_Message requeset_message;
+  std::map<std::string, std::string> request_message;
 
  public:
   Request_Parse();
@@ -16,7 +17,7 @@ class Request_Parse {
   ~Request_Parse();
 
   void run_parsing(void);
-  std::vector<std::string> parse_message(std::string message);
+  std::vector<std::string> split_message(std::string message);
   void parse_start_line(std::string message);
   void parse_header(std::string message);
   void parse_entity(std::string message);
