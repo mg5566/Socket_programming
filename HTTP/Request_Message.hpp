@@ -41,6 +41,10 @@ class Request_Message {
     */
 
   public:
+    Request_Message();
+    Request_Message(const Request_Message &rhs);
+    ~Request_Message();
+    Request_Message &operator=(const Request_Message &rhs);
     /* getter setter
     Request Message 작성에 필요한 기능
     */
