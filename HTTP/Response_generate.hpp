@@ -10,6 +10,9 @@ class Response_Generate {
     std::string response_message;
 
   public:
+    Response_Generate();
+    ~Response_Generate();
+
     void gerenate_response_message(void);
     void gen_start_line(void);
     void gen_header(void);
