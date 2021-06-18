@@ -40,6 +40,11 @@ class Response_Message {
     // Entity body
     std::string entity;
 
+    /* another design
+    std::map<std::string, std::string> response_map;
+    unsigned int status_code;
+    */
+
   public:
     /* getter setter
     Response Message 에 필요한 기능
@@ -75,5 +80,9 @@ class Response_Message {
     void setContent_length(std::string new_content_length);
     void setContent_type(std::string new_content_type);
 
+    /* clear
+    멤버 변수들의 값을 초기화합니다.
+    */
+    void clear(void);
 };
 #endif

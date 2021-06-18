@@ -36,6 +36,10 @@ class Request_Message {
     // Entity body
     std::string entity;
 
+    /* another design
+    std::map<std::string, std::string> request_map;
+    */
+
   public:
     /* getter setter
     Request Message 작성에 필요한 기능
@@ -69,7 +73,11 @@ class Request_Message {
     // Entity
     const std::map<std::string, std::string> getEntity(void) const;
     void setEntity(std::string new_entity) const;
-    
+
+    /* clear
+    멤버 변수들의 값을 초기화합니다.
+    */
+    void clear(void);
 };
 
 #endif
