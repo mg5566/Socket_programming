@@ -24,16 +24,22 @@ void Request_Parse::run_parsing(void) {
 split 된 message 는 vector 로 관리합니다.
 */
 std::vector<std::string> Request_Parse::split_message(std::string message) {
+  (void)message;
+  std::vector<std::string> temp;
+  return (temp);
 }
 
 /*
 split 된 message 를 parsing 합니다.
 */
-void parse_start_line(std::string message) {
+void Request_Parse::parse_start_line(std::string message) {
+  (void)message;
 }
 
-void parse_header(std::string message) {
+void Request_Parse::parse_header(std::string message) {
+  (void)message;
 }
 
-void parse_entity(std::string message) {
+void Request_Parse::parse_entity(std::string message) {
+  (void)message;
 }
