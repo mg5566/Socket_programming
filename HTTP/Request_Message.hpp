@@ -6,35 +6,35 @@
 
 class Request_Message {
   private:
-    // // start line
-    // std::string method;
-    // std::string url;
-    // std::string version;
-    // // Header
-    // /* Request header
-    // Accept-Charset
-    // Accept-Language
-    // Authorization
-    // Host
-    // Referer
-    // User-Agent
-    // */
-    // std::map<std::string, std::string> accept_charset;
-    // std::map<std::string, std::string> accept_language;
-    // std::map<std::string, std::string> authorization;
-    // std::map<std::string, std::string> host;
-    // std::map<std::string, std::string> referer;
-    // std::map<std::string, std::string> user_agent;
-    // /* Entity header
-    // Content-Language
-    // Content-Length
-    // Content-Type
-    // */
-    // std::map<std::string, std::string> content_language;
-    // std::map<std::string, std::string> content_length;
-    // std::map<std::string, std::string> content_type;
-    // // Entity body
-    // std::string entity;
+    // start line
+    std::string method;
+    std::string url;
+    std::string version;
+    // Header
+    /* Request header
+    Accept-Charset
+    Accept-Language
+    Authorization
+    Host
+    Referer
+    User-Agent
+    */
+    std::map<std::string, std::string> accept_charset;
+    std::map<std::string, std::string> accept_language;
+    std::map<std::string, std::string> authorization;
+    std::map<std::string, std::string> host;
+    std::map<std::string, std::string> referer;
+    std::map<std::string, std::string> user_agent;
+    /* Entity header
+    Content-Language
+    Content-Length
+    Content-Type
+    */
+    std::map<std::string, std::string> content_language;
+    std::map<std::string, std::string> content_length;
+    std::map<std::string, std::string> content_type;
+    // Entity body
+    std::string entity;
 
     /* another design */
     std::map<std::string, std::string> request_map;
