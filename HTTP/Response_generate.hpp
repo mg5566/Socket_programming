@@ -8,6 +8,7 @@
 class Response_Generate {
   private:
     std::string response_message;
+    // write(client_fd, Response_message.c_str(), message.size());
 
   public:
     Response_Generate();
