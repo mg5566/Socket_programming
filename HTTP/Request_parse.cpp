@@ -1,5 +1,7 @@
 #include "Request_parse.hpp"
 
+#include <iostream>
+
 Request_Parse::Request_Parse() : origin_message(NULL) {
 }
 
@@ -14,9 +16,11 @@ void Request_Parse::run_parsing(void) {
   std::vector<std::string> message_vector;
 
   message_vector = split_message(origin_message);
-  parse_start_line(message_vector[0]);
-  parse_header(message_vector[1]);
-  parse_entity(message_vector[2]);
+  for (std::vector<std::string>::iterator it = message_vector.begin(); it != message_vector.end(); ++it)
+    std::cout << "test : " << *it << std::endl;
+  //parse_start_line(message_vector[0]);
+  //parse_header(message_vector[1]);
+  //parse_entity(message_vector[2]);
 }
 
 /*
@@ -24,8 +28,18 @@ void Request_Parse::run_parsing(void) {
 split 된 message 는 vector 로 관리합니다.
 */
 std::vector<std::string> Request_Parse::split_message(std::string message) {
-  (void)message;
   std::vector<std::string> temp;
+
+  std::cout << "test print" << std::endl;
+  std::cout << message << std::endl;
+
+  std::size_t line_end_pos = message.find("\r\n");
+  std::size_t head_end_pos = message.find("\r\n\r\n");
+  std::cout << "line_end_pos : " << line_end_pos << std::endl;
+  std::cout << "head_end_pos : " << head_end_pos << std::endl;
+  std::cout << message.substr(line_end_pos) << std::endl;
+
+
   return (temp);
 }
 
