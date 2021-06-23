@@ -6,6 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <unistd.h>
+#include <string>
+#include <iostream>
+
+#define PORT 1234
+#define BACK_LOG 10
+#define QUEUE_SIZE 10
+#define BUFFER_SIZE 1024
 
 void print_error(std::string str) {
     perror(str.c_str());
@@ -14,8 +22,10 @@ void print_error(std::string str) {
 
 int main(void) {
     int server_sock;
+    int client_sock;
     int sock_optval = 1;
-    struct sockaddr_in sin;
+    struct sockaddr_in server_addr;
+    struct sockaddr_in client_addr;
     int ret;
 
     /* open server socket */
@@ -30,11 +40,11 @@ int main(void) {
     
 
     /* set struct sockaddr */
-    sin.sin_family = AF_INET;
-    sin.sin_addr.s_addr = INADDR_ANY;
-    sin.sin_port = htons(1234);  // port is 1234
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(1234);  // port is 1234
     /* bind */
-    ret = bind(server_sock, (struct sockaddr *)&sin, sizeof(struct sockaddr));
+    ret = bind(server_sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
     if (ret == -1)
         print_error("bind");
 
@@ -44,18 +54,62 @@ int main(void) {
         print_error("listen");
 
     int kq;
-    struct kevent k_ev;
+    struct kevent sock_event;
+    struct kevent *kqueue_event;
+    int event_cnt;
 
     /* create kernel queue */
     kq = kqueue();
     if (kq == -1)
         print_error("kqueue");
     /* set event */
-    EV_SET(&k_ev, server_sock, EVFILT_READ, EV_ADD, 0, 0, NULL);
-    ret = kevent(kq, &k_ev, 1, NULL, 0, NULL);
+    EV_SET(&sock_event, server_sock, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    ret = kevent(kq, &sock_event, 1, NULL, 0, NULL);
     if ( ret == -1 )
-        print_error("kevent");
-    
+        print_error("kevent socket event");
+
+    kqueue_event = (struct kevent *)malloc(sizeof(struct kevent) * QUEUE_SIZE);
+    /* loop to process events */
+    while (1) {
+        /* wait for events to occur */
+        event_cnt = kevent(kq, NULL, 0, kqueue_event, QUEUE_SIZE, NULL);
+        if (event_cnt == -1) {
+            close(server_sock);
+            close(kq);
+            print_error("kevent queue event");
+        }
+
+        /* check what find of event */
+        for (int i = 0; i < event_cnt; ++i) {  // 전위 연산은 센스
+            /* server socker event */
+            int sock = kqueue_event[i].ident;
+            if (sock == server_sock) {
+                socklen_t socklen;
+                client_sock= accept(server_sock, (struct sockaddr *)&client_addr, &socklen);
+                /* add client socket to event */
+                EV_SET(&sock_event, client_sock, EVFILT_READ, EV_ADD, 0, 0, NULL);
+                ret = kevent(kq, &sock_event, 1, NULL, 0, NULL);
+                if (ret == -1) {
+                    close(server_sock);
+                    close(client_sock);
+                    close(kq);
+                    print_error("kevent socket event");
+                }
+            /* client socket event : recive request message */
+            } else {
+                // 향후 logic 을 다듬어야합니다.
+                char buf[BUFFER_SIZE];
+                std::string str;
+                // getline 을 사용해보고 싶지만 실패 ㅠㅠ
+                int len = read(sock, buf, BUFFER_SIZE);
+                buf[len] = '\0';
+                str = buf;
+                std::cout << "test " << i << std::endl;
+                std::cout << str << std::endl;
+            }
+        } 
+
+    } 
 
 
     return (0);
