@@ -13,6 +13,7 @@ Request_Parse::~Request_Parse() {
 }
 
 void Request_Parse::run_parsing(void) {
+  std::cout << origin_message << std::endl;
   std::vector<std::string> message_vector;
 
   message_vector = split_message(origin_message);
@@ -23,6 +24,12 @@ void Request_Parse::run_parsing(void) {
   for (std::map<std::string, std::string>::iterator it = start_line_map.begin(); it != start_line_map.end(); ++it)
     std::cout << it->first << " : " << it->second << std::endl;
   parse_header(message_vector[1]);
+  for (std::map<std::string, std::vector<std::string> >::iterator it = header_map.begin(); it != header_map.end(); ++it) {
+    std::cout << it->first << " : ";
+    for (std::vector<std::string>::iterator vit = it->second.begin(); vit != it->second.end(); ++vit)
+      std::cout << *vit << " ";
+    std::cout << std::endl;
+  }
   parse_entity(message_vector[2]);
 }
 
@@ -64,9 +71,38 @@ void Request_Parse::parse_start_line(std::string message) {
 }
 
 void Request_Parse::parse_header(std::string message) {
-  (void)message;
+  std::size_t colon_pos = message.find(":");
+  while (colon_pos != message.npos) {
+    std::string header = message.substr(0, colon_pos);
+    message.erase(0, colon_pos + 2);
+    std::size_t end_pos = message.find("\r\n");
+    std::vector<std::string> vector = split(message.substr(0, end_pos), ',');
+    message.erase(0, end_pos + 2);
+    header_map[header] = vector;
+    colon_pos = message.find(":");
+  }
+  // 위 방식이 잘된다면 colon_pos 가 npos 가 될때까지 loop 를 해보자
 }
 
 void Request_Parse::parse_entity(std::string message) {
   (void)message;
+}
+
+std::vector<std::string> split(std::string str, char limiter) {
+  std::vector<std::string> temp;
+
+  std::cout << "test print : " << str << "|" << std::endl;
+  std::size_t prev_pos;
+  std::size_t pos = str.find(limiter);
+  if (pos == str.npos)
+    temp.push_back(str.substr(0, str.length()));
+  else {
+    while (pos != str.npos) {
+      temp.push_back(str.substr(0, pos));
+      prev_pos = pos + 1;
+      str.erase(0, prev_pos);
+      pos = str.find(limiter, prev_pos);
+    }
+  }
+  return (temp);
 }

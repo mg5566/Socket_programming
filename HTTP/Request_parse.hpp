@@ -15,6 +15,7 @@ class Request_Parse {
   // request_message_map["URL"] = "127.0.0.1";
   // request_message_map["Entity"] = "......";
   std::map<std::string, std::string> start_line_map;
+  std::map<std::string, std::vector<std::string> > header_map;
 
  public:
   Request_Parse();
@@ -29,5 +30,7 @@ class Request_Parse {
 
   // 향후 getter 가 필요하다고 판된됩니다.
 };
+
+std::vector<std::string> split(std::string str, char limiter);
 
 #endif
