@@ -14,6 +14,7 @@ class Request_Parse {
   // request_message_map["Method"] = "GET";
   // request_message_map["URL"] = "127.0.0.1";
   // request_message_map["Entity"] = "......";
+  std::map<std::string, std::string> start_line_map;
 
  public:
   Request_Parse();

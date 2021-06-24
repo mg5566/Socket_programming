@@ -102,6 +102,8 @@ int main(void) {
                 char buf[BUFFER_SIZE];
                 std::string str;
                 // getline 을 사용해보고 싶지만 실패 ㅠㅠ
+                // recv(sock, buf, BUFFER_SIZE, flags);
+                // flag 가 0 이면 read 와 같다.
                 int len = read(sock, buf, BUFFER_SIZE);
                 buf[len] = '\0';
                 str = buf;
