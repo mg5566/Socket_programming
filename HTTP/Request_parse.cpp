@@ -18,9 +18,9 @@ void Request_Parse::run_parsing(void) {
   message_vector = split_message(origin_message);
   for (std::vector<std::string>::iterator it = message_vector.begin(); it != message_vector.end(); ++it)
     std::cout << "test : " << *it << std::endl;
-  //parse_start_line(message_vector[0]);
-  //parse_header(message_vector[1]);
-  //parse_entity(message_vector[2]);
+  parse_start_line(message_vector[0]);
+  parse_header(message_vector[1]);
+  parse_entity(message_vector[2]);
 }
 
 /*
@@ -30,16 +30,27 @@ split 된 message 는 vector 로 관리합니다.
 std::vector<std::string> Request_Parse::split_message(std::string message) {
   std::vector<std::string> temp;
 
-  std::cout << "test print" << std::endl;
-  std::cout << message << std::endl;
-
   std::size_t line_end_pos = message.find("\r\n");
   std::size_t head_end_pos = message.find("\r\n\r\n");
+  //std::cout << "line_end_pos : " << line_end_pos << std::endl;
+  //std::cout << "head_end_pos : " << head_end_pos << std::endl;
+  temp.push_back(message.substr(0, line_end_pos));
+  // line_end_pos 에 +2 를 해야 \r\n(start line 과 head 의 구분문자열) 을 피할 수 있습니다.
+  temp.push_back(message.substr(line_end_pos + 2, head_end_pos));
+  //std::cout << "entity_end_pos : " << message.length() << std::endl;
+  // head_end_pos 에 +4 를 해야 \r\n\r\n(head 와 entity 의 구분문자열) 을 피할 수 있습니다.
+  temp.push_back(message.substr(head_end_pos + 4, message.length()));
+  /*
   std::cout << "line_end_pos : " << line_end_pos << std::endl;
   std::cout << "head_end_pos : " << head_end_pos << std::endl;
-  std::cout << message.substr(line_end_pos) << std::endl;
-
-
+  std::cout << "test line_end_pos" << std::endl;
+  std::cout << message.substr(0, line_end_pos) << std::endl;
+  std::cout << "finish line_end_post" << std::endl;
+  // 왜인지 모르겠지만 출력이 안되고 있습니다.
+  std::cout << "test head_end_pos" << std::endl;
+  std::cout << message.substr(line_end_pos + 1, head_end_pos) << std::endl;
+  std::cout << "finish head_end_pos" << std::endl;
+  */
   return (temp);
 }
 
