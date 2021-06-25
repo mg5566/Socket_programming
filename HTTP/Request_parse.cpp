@@ -13,28 +13,30 @@ Request_Parse::~Request_Parse() {
 }
 
 void Request_Parse::run_parsing(void) {
-  std::cout << origin_message << std::endl;
+  // std::cout << "===test print origin message===" << std::endl;
+  // std::cout << origin_message << std::endl;
   std::vector<std::string> message_vector;
 
   message_vector = split_message(origin_message);
+  parse_start_line(message_vector[0]);
+  parse_header(message_vector[1]);
+  parse_entity(message_vector[2]);
+  // std::cout << "====test print message vector====" << std::endl;
   // for (std::vector<std::string>::iterator it = message_vector.begin(); it != message_vector.end(); ++it)
   //   std::cout << "test : " << *it << std::endl;
-  parse_start_line(message_vector[0]);
   // test print
-  std::cout << "=======print start line=========" << std::endl;
-  for (std::map<std::string, std::string>::iterator it = start_line_map.begin(); it != start_line_map.end(); ++it)
-    std::cout << it->first << " : " << it->second << std::endl;
-  parse_header(message_vector[1]);
-  std::cout << "=======print headers============" << std::endl;
-  for (std::map<std::string, std::vector<std::string> >::iterator it = header_map.begin(); it != header_map.end(); ++it) {
-    std::cout << it->first << " : ";
-    for (std::vector<std::string>::iterator vit = it->second.begin(); vit != it->second.end(); ++vit)
-      std::cout << *vit << "|";
-    std::cout << std::endl;
-  }
-  parse_entity(message_vector[2]);
-  std::cout << "=======print entity body========" << std::endl;
-  std::cout << entity_str << std::endl;
+  // std::cout << "=======print start line=========" << std::endl;
+  // for (std::map<std::string, std::string>::iterator it = start_line_map.begin(); it != start_line_map.end(); ++it)
+  //   std::cout << it->first << " : " << it->second << std::endl;
+  // std::cout << "=======print headers============" << std::endl;
+  // for (std::map<std::string, std::vector<std::string> >::iterator it = header_map.begin(); it != header_map.end(); ++it) {
+  //   std::cout << it->first << " : ";
+  //   for (std::vector<std::string>::iterator vit = it->second.begin(); vit != it->second.end(); ++vit)
+  //     std::cout << *vit << "|";
+  //   std::cout << std::endl;
+  // }
+  // std::cout << "=======print entity body========" << std::endl;
+  // std::cout << entity_str << "|" << std::endl;
 }
 
 /*
@@ -47,12 +49,18 @@ std::vector<std::string> Request_Parse::split_message(std::string message) {
   // find 후 substr 을 사용하여 request message 를 split 합니다.
   // erase 를 사용하지 않았지만 sequence erase 를 사용하여 지우고 다시 find 하는 방법도 있습니다.
   std::size_t line_end_pos = message.find("\r\n");
-  std::size_t head_end_pos = message.find("\r\n\r\n");
   temp.push_back(message.substr(0, line_end_pos));
   // line_end_pos 에 +2 를 해야 \r\n(start line 과 head 의 구분문자열) 을 피할 수 있습니다.
-  temp.push_back(message.substr(line_end_pos + 2, head_end_pos));
+  message.erase(0, line_end_pos + 2);
+  std::size_t head_end_pos = message.find("\r\n\r\n");
+  temp.push_back(message.substr(0, head_end_pos));
+  // std::cout << "test headers" << std::endl;
+  // std::cout << message.substr(0 , head_end_pos) << std::endl;
   //std::cout << "entity_end_pos : " << message.length() << std::endl;
   // head_end_pos 에 +4 를 해야 \r\n\r\n(head 와 entity 의 구분문자열) 을 피할 수 있습니다.
+  // test entity body
+  // std::cout << "test entity body" << std::endl;
+  // std::cout << message.substr(head_end_pos + 4, message.length()) << std::endl;
   temp.push_back(message.substr(head_end_pos + 4, message.length()));
   return (temp);
 }
@@ -80,8 +88,6 @@ void Request_Parse::parse_header(std::string message) {
     std::string header = message.substr(0, colon_pos);
     message.erase(0, colon_pos + 2);
     std::size_t end_pos = message.find("\r\n");
-    // split 의 limiter 설정이 관건입니다.
-    //std::vector<std::string> vector = split(message.substr(0, end_pos), ',');
     std::vector<std::string> vector = split_value(header, message.substr(0, end_pos));
     message.erase(0, end_pos + 2);
     header_map[header] = vector;
@@ -118,35 +124,19 @@ std::vector<std::string> split_value(std::string header, std::string str) {
     temp = split(str, ' ');
   else if (header == "Host")
     temp.push_back(str);
-    // temp = split_Host(str);  // 그대로 담는다.
   else if (header == "User-Agent")
     temp.push_back(str);
   else if (header == "Referer")
     temp.push_back(str);
-  else if (header == "Contents-Language")
+  else if (header == "Content-Language")
     temp = split(str, ',');
-  else if (header == "Contents-Length")
+  else if (header == "Content-Length")
     temp.push_back(str);
-  else if (header == "Contents-type")
+  else if (header == "Content-Type")
     temp = split(str, ';');
   else if (header == "Data")
     temp.push_back(str);  // data format 이 있긴한데, 언제 사용할지 모르겠습니다. 일단 1개로 간주합니다.
-
   return (temp);
-
-/* response 에 대한 내용
-  else if (header == "Allow")
-  else if (header == "Last-Modified")
-  else if (header == "Location")
-  else if (header == "Retry-After")
-  else if (header == "Server")
-  else if (header == "WWW-Authenticate")
-  else if (header == "Transfer-Encoding")
-  else if (header == "Contents-Language")
-  else if (header == "Contents-Length")
-  else if (header == "Contents-type")
-  else if (header == "Data")
-*/
 }
 
 std::vector<std::string> split(std::string str, char limiter) {
