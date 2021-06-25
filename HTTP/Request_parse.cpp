@@ -21,16 +21,20 @@ void Request_Parse::run_parsing(void) {
   //   std::cout << "test : " << *it << std::endl;
   parse_start_line(message_vector[0]);
   // test print
+  std::cout << "=======print start line=========" << std::endl;
   for (std::map<std::string, std::string>::iterator it = start_line_map.begin(); it != start_line_map.end(); ++it)
     std::cout << it->first << " : " << it->second << std::endl;
   parse_header(message_vector[1]);
+  std::cout << "=======print headers============" << std::endl;
   for (std::map<std::string, std::vector<std::string> >::iterator it = header_map.begin(); it != header_map.end(); ++it) {
     std::cout << it->first << " : ";
     for (std::vector<std::string>::iterator vit = it->second.begin(); vit != it->second.end(); ++vit)
-      std::cout << *vit << " ";
+      std::cout << *vit << "|";
     std::cout << std::endl;
   }
   parse_entity(message_vector[2]);
+  std::cout << "=======print entity body========" << std::endl;
+  std::cout << entity_str << std::endl;
 }
 
 /*
@@ -76,7 +80,9 @@ void Request_Parse::parse_header(std::string message) {
     std::string header = message.substr(0, colon_pos);
     message.erase(0, colon_pos + 2);
     std::size_t end_pos = message.find("\r\n");
-    std::vector<std::string> vector = split(message.substr(0, end_pos), ',');
+    // split 의 limiter 설정이 관건입니다.
+    //std::vector<std::string> vector = split(message.substr(0, end_pos), ',');
+    std::vector<std::string> vector = split_value(header, message.substr(0, end_pos));
     message.erase(0, end_pos + 2);
     header_map[header] = vector;
     colon_pos = message.find(":");
@@ -84,22 +90,85 @@ void Request_Parse::parse_header(std::string message) {
   // 위 방식이 잘된다면 colon_pos 가 npos 가 될때까지 loop 를 해보자
 }
 
+// entity body 가 포함된 데이터를 보내서 확인해봐야합니다.
 void Request_Parse::parse_entity(std::string message) {
-  (void)message;
+  entity_str = message;
+}
+
+/* header 의 value 를 split 하는 함수
+** 
+** value 는 통일된 format 이 아니라서 ',' or ' ' 을 기준으로 split 할 수 없습니다.
+** key 마다 다르게 split 을 진행하겠습니다.
+*/
+std::vector<std::string> split_value(std::string header, std::string str) {
+  // 0. 올바른 header 를 찾습니다.
+  // 1. header 에 따라 split 을 다르게 합니다.
+  //  - 1개의 value 만 있는 경우
+  //  - ',' 을 기준으로 여러 value 가 존재하는 경우가 있고
+  // 2. split 결과를 temp vector 에 저장하고, 반환합니다.
+
+  // declare return value
+  std::vector<std::string> temp;
+  // 0. 올바른 header 찾기
+  if (header == "Accept-Charsets")
+    temp = split(str, ',');
+  else if (header == "Accept-Language")
+    temp = split(str, ',');
+  else if (header == "Authorization")
+    temp = split(str, ' ');
+  else if (header == "Host")
+    temp.push_back(str);
+    // temp = split_Host(str);  // 그대로 담는다.
+  else if (header == "User-Agent")
+    temp.push_back(str);
+  else if (header == "Referer")
+    temp.push_back(str);
+  else if (header == "Contents-Language")
+    temp = split(str, ',');
+  else if (header == "Contents-Length")
+    temp.push_back(str);
+  else if (header == "Contents-type")
+    temp = split(str, ';');
+  else if (header == "Data")
+    temp.push_back(str);  // data format 이 있긴한데, 언제 사용할지 모르겠습니다. 일단 1개로 간주합니다.
+
+  return (temp);
+
+/* response 에 대한 내용
+  else if (header == "Allow")
+  else if (header == "Last-Modified")
+  else if (header == "Location")
+  else if (header == "Retry-After")
+  else if (header == "Server")
+  else if (header == "WWW-Authenticate")
+  else if (header == "Transfer-Encoding")
+  else if (header == "Contents-Language")
+  else if (header == "Contents-Length")
+  else if (header == "Contents-type")
+  else if (header == "Data")
+*/
 }
 
 std::vector<std::string> split(std::string str, char limiter) {
   std::vector<std::string> temp;
 
-  std::cout << "test print : " << str << "|" << std::endl;
   std::size_t prev_pos;
   std::size_t pos = str.find(limiter);
   if (pos == str.npos)
     temp.push_back(str.substr(0, str.length()));
-  else {
+  else if (limiter == ' ') {
     while (pos != str.npos) {
       temp.push_back(str.substr(0, pos));
+      // " " 을 지나치기 위해서 +1 합니다.
       prev_pos = pos + 1;
+      str.erase(0, prev_pos);
+      pos = str.find(limiter, prev_pos);
+    }
+  } else {
+    while (pos != str.npos) {
+      temp.push_back(str.substr(0, pos));
+      // "<limiter> " 을 지나치기 위해서 +2 합니다.
+      prev_pos = pos + 2;
       str.erase(0, prev_pos);
       pos = str.find(limiter, prev_pos);
     }

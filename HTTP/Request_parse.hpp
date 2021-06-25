@@ -9,13 +9,9 @@ class Request_Parse {
  private:
   //std::vector<std::string> message_vector;
   std::string origin_message;
-  //Request_Message requeset_message;
-  std::map<std::string, std::string> request_message_map;
-  // request_message_map["Method"] = "GET";
-  // request_message_map["URL"] = "127.0.0.1";
-  // request_message_map["Entity"] = "......";
   std::map<std::string, std::string> start_line_map;
   std::map<std::string, std::vector<std::string> > header_map;
+  std::string entity_str;
 
  public:
   Request_Parse();
@@ -32,5 +28,6 @@ class Request_Parse {
 };
 
 std::vector<std::string> split(std::string str, char limiter);
+std::vector<std::string> split_value(std::string header, std::string str);
 
 #endif
