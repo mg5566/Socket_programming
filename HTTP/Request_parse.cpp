@@ -13,30 +13,30 @@ Request_Parse::~Request_Parse() {
 }
 
 void Request_Parse::run_parsing(void) {
-  // std::cout << "===test print origin message===" << std::endl;
-  // std::cout << origin_message << std::endl;
+  std::cout << "===test print origin message===" << std::endl;
+  std::cout << origin_message << std::endl;
   std::vector<std::string> message_vector;
 
   message_vector = split_message(origin_message);
   parse_start_line(message_vector[0]);
   parse_header(message_vector[1]);
   parse_entity(message_vector[2]);
-  // std::cout << "====test print message vector====" << std::endl;
-  // for (std::vector<std::string>::iterator it = message_vector.begin(); it != message_vector.end(); ++it)
-  //   std::cout << "test : " << *it << std::endl;
+  std::cout << "====test print message vector====" << std::endl;
+  for (std::vector<std::string>::iterator it = message_vector.begin(); it != message_vector.end(); ++it)
+    std::cout << "test : " << *it << std::endl;
   // test print
-  // std::cout << "=======print start line=========" << std::endl;
-  // for (std::map<std::string, std::string>::iterator it = start_line_map.begin(); it != start_line_map.end(); ++it)
-  //   std::cout << it->first << " : " << it->second << std::endl;
-  // std::cout << "=======print headers============" << std::endl;
-  // for (std::map<std::string, std::vector<std::string> >::iterator it = header_map.begin(); it != header_map.end(); ++it) {
-  //   std::cout << it->first << " : ";
-  //   for (std::vector<std::string>::iterator vit = it->second.begin(); vit != it->second.end(); ++vit)
-  //     std::cout << *vit << "|";
-  //   std::cout << std::endl;
-  // }
-  // std::cout << "=======print entity body========" << std::endl;
-  // std::cout << entity_str << "|" << std::endl;
+  std::cout << "=======print start line=========" << std::endl;
+  for (std::map<std::string, std::string>::iterator it = start_line_map.begin(); it != start_line_map.end(); ++it)
+    std::cout << it->first << " : " << it->second << std::endl;
+  std::cout << "=======print headers============" << std::endl;
+  for (std::map<std::string, std::vector<std::string> >::iterator it = header_map.begin(); it != header_map.end(); ++it) {
+    std::cout << it->first << " : ";
+    for (std::vector<std::string>::iterator vit = it->second.begin(); vit != it->second.end(); ++vit)
+      std::cout << *vit << "|";
+    std::cout << std::endl;
+  }
+  std::cout << "=======print entity body========" << std::endl;
+  std::cout << entity_str << "|" << std::endl;
 }
 
 /*
@@ -102,7 +102,7 @@ void Request_Parse::parse_entity(std::string message) {
 }
 
 /* header 의 value 를 split 하는 함수
-** 
+**
 ** value 는 통일된 format 이 아니라서 ',' or ' ' 을 기준으로 split 할 수 없습니다.
 ** key 마다 다르게 split 을 진행하겠습니다.
 */

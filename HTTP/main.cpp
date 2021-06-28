@@ -38,12 +38,12 @@ int main(void) {
         perror("setsockopt");
         exit(1);
         */
-    
+
 
     /* set struct sockaddr */
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(1234);  // port is 1234
+    server_addr.sin_port = htons(PORT);  // port is 1234
     /* bind */
     ret = bind(server_sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
     if (ret == -1)
@@ -86,7 +86,7 @@ int main(void) {
             int sock = kqueue_event[i].ident;
             if (sock == server_sock) {
                 socklen_t socklen;
-                client_sock= accept(server_sock, (struct sockaddr *)&client_addr, &socklen);
+                client_sock = accept(server_sock, (struct sockaddr *)&client_addr, &socklen);
                 /* add client socket to event */
                 EV_SET(&sock_event, client_sock, EVFILT_READ, EV_ADD, 0, 0, NULL);
                 ret = kevent(kq, &sock_event, 1, NULL, 0, NULL);
@@ -99,21 +99,33 @@ int main(void) {
             /* client socket event : recive request message */
             } else {
                 // 향후 logic 을 다듬어야합니다.
+                // std::cout << "kqueue_event data : " << kqueue_event->data << std::endl;
                 char buf[BUFFER_SIZE];
                 std::string str;
-                // getline 을 사용해보고 싶지만 실패 ㅠㅠ
+                // getline 을 사용해보고 싶지만 실패 ㅠㅠ
                 // recv(sock, buf, BUFFER_SIZE, flags);
                 // flag 가 0 이면 read 와 같다.
                 int len = read(sock, buf, BUFFER_SIZE);
+                // int len = read(sock, buf, kqueue_event->data);
                 buf[len] = '\0';
                 str = buf;
 
                 Request_Parse parser(str);
                 parser.run_parsing();
+                // parser.get_data();
+
+                // parser.set_str(str);
+                // parser.run_parsing();
+
+                // process_CGI
+                // process_method
+
+                // gen_response
+
                 str.clear();
             }
-        } 
-    } 
+        }
+    }
 
     return (0);
 }
