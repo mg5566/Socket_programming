@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-Request_Parse::Request_Parse() : origin_message(NULL) {
+Request_Parse::Request_Parse() {
 }
 
 Request_Parse::Request_Parse(std::string buffer) : origin_message(buffer) {
@@ -13,30 +13,14 @@ Request_Parse::~Request_Parse() {
 }
 
 void Request_Parse::run_parsing(void) {
-  std::cout << "===test print origin message===" << std::endl;
-  std::cout << origin_message << std::endl;
+  // std::cout << "===test print origin message===" << std::endl;
+  // std::cout << origin_message << std::endl;
   std::vector<std::string> message_vector;
 
-  message_vector = split_message(origin_message);
+  message_vector = split_message(origin_message);  // start / header / body
   parse_start_line(message_vector[0]);
   parse_header(message_vector[1]);
   parse_entity(message_vector[2]);
-  std::cout << "====test print message vector====" << std::endl;
-  for (std::vector<std::string>::iterator it = message_vector.begin(); it != message_vector.end(); ++it)
-    std::cout << "test : " << *it << std::endl;
-  // test print
-  std::cout << "=======print start line=========" << std::endl;
-  for (std::map<std::string, std::string>::iterator it = start_line_map.begin(); it != start_line_map.end(); ++it)
-    std::cout << it->first << " : " << it->second << std::endl;
-  std::cout << "=======print headers============" << std::endl;
-  for (std::map<std::string, std::vector<std::string> >::iterator it = header_map.begin(); it != header_map.end(); ++it) {
-    std::cout << it->first << " : ";
-    for (std::vector<std::string>::iterator vit = it->second.begin(); vit != it->second.end(); ++vit)
-      std::cout << *vit << "|";
-    std::cout << std::endl;
-  }
-  std::cout << "=======print entity body========" << std::endl;
-  std::cout << entity_str << "|" << std::endl;
 }
 
 /*
@@ -68,6 +52,7 @@ std::vector<std::string> Request_Parse::split_message(std::string message) {
 /*
 split 된 message 를 parsing 합니다.
 */
+// GET /index.html HTTP/1.1crlf
 void Request_Parse::parse_start_line(std::string message) {
   // parsing 된 data 는 member variable start_line_map 에 key(string), value(string) 형식으로 저장합니다.
   // find 로 space 를 찾고 method 를 저장한다음 method + space 를 지우고 다음을 parsing 합니다.
@@ -82,6 +67,10 @@ void Request_Parse::parse_start_line(std::string message) {
   start_line_map["version"] = message.substr(0, version_pos);
 }
 
+// Accept-Charsets: value_1(,) value_2crlf
+// Accept-Length: value_1(,) value_2crlf
+// crlf
+// 
 void Request_Parse::parse_header(std::string message) {
   std::size_t colon_pos = message.find(":");
   while (colon_pos != message.npos) {
@@ -99,6 +88,28 @@ void Request_Parse::parse_header(std::string message) {
 // entity body 가 포함된 데이터를 보내서 확인해봐야합니다.
 void Request_Parse::parse_entity(std::string message) {
   entity_str = message;
+}
+
+/* origin message 를 setting 하는 함수
+** 
+** setter 에 해당되는 기능입니다.
+*/
+void Request_Parse::set_message(std::string buffer) {
+  origin_message = buffer;
+}
+
+/* parsing 된 data 를 반환해주는 함수
+** 
+** getter 에 해당되는 기능
+*/
+std::map<std::string, std::string> Request_Parse::get_start_line_map() {
+  return (start_line_map);
+}
+std::map<std::string, std::vector<std::string> > Request_Parse::get_header_map() {
+  return (header_map);
+}
+std::string Request_Parse::get_entity_str() {
+  return (entity_str);
 }
 
 /* header 의 value 를 split 하는 함수
@@ -164,4 +175,20 @@ std::vector<std::string> split(std::string str, char limiter) {
     }
   }
   return (temp);
+}
+
+void print_parsed_data(std::map<std::string, std::string> sl, std::map<std::string, std::vector<std::string> > h, std::string e) {
+  // test print
+  std::cout << "=======print start line=========" << std::endl;
+  for (std::map<std::string, std::string>::iterator it = sl.begin(); it != sl.end(); ++it)
+    std::cout << it->first << " : " << it->second << std::endl;
+  std::cout << "=======print headers============" << std::endl;
+  for (std::map<std::string, std::vector<std::string> >::iterator it = h.begin(); it != h.end(); ++it) {
+    std::cout << it->first << " : ";
+    for (std::vector<std::string>::iterator vit = it->second.begin(); vit != it->second.end(); ++vit)
+      std::cout << *vit << "|";
+    std::cout << std::endl;
+  }
+  std::cout << "=======print entity body========" << std::endl;
+  std::cout << e << "|" << std::endl;
 }

@@ -29,6 +29,8 @@ int main(void) {
     struct sockaddr_in client_addr;
     int ret;
 
+    Request_Parse *parser = new Request_Parse();
+
     /* open server socket */
     server_sock = socket(AF_INET, SOCK_STREAM, 0);
     /* set socket option to be reusable */
@@ -110,12 +112,13 @@ int main(void) {
                 buf[len] = '\0';
                 str = buf;
 
+                /*
                 Request_Parse parser(str);
-                parser.run_parsing();
-                // parser.get_data();
-
-                // parser.set_str(str);
-                // parser.run_parsing();
+                */
+                (*parser).set_message(str);
+                (*parser).run_parsing();
+                print_parsed_data((*parser).get_start_line_map(), (*parser).get_header_map(), (*parser).get_entity_str());
+                // parser.get_method();
 
                 // process_CGI
                 // process_method
@@ -129,27 +132,3 @@ int main(void) {
 
     return (0);
 }
-/*
-int main(void) {
-    std::string buffer;
-
-    buffer += "POST /cgi-bin/process.cgi HTTP/1.1\r\n";
-    buffer += "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n";
-    buffer += "Host: www.tutorialspoint.com\r\n";
-    buffer += "Content-Type: text/xml; charset=utf-8\r\n";
-    buffer += "Content-Length: length\r\n";
-    buffer += "Accept-Language: en-us\r\n";
-    buffer += "Accept-Encoding: gzip, deflate\r\n";
-    buffer += "Connection: Keep-Alive\r\n";
-    buffer += "\r\n";
-    buffer += "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-    buffer += "<string xmlns=\"http://clearforest.com/\">string</string>";
-
-    std::cout << "test print buffer" << std::endl;
-    std::cout << buffer << std::endl;
-
-    Request_Parse parser(buffer);
-
-    return (0);
-}
-*/
