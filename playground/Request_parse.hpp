@@ -27,7 +27,7 @@ class Request_Parse {
   void parse_entity(std::string message);
 
   // 향후 getter 가 필요하다고 판된됩니다.
-  void set_message(std::string buffer);
+  void set_message(std::string const &buffer);
 
   std::map<std::string, std::string> get_start_line_map();
   // 각각 나눠서 담고있다면 getter 도 각각 만들어야합니다.

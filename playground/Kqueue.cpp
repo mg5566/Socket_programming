@@ -105,15 +105,13 @@ int_t	Kqueue::kqueue_process_events(SocketManager *sm, Request_Parse *parser)
 		}
 		else
 		{
-			// std::cout << "data: " << event_list[i].data << std::endl;
 			recv(c->get_fd(), c->buffer, event_list[i].data, 0);
 			// parsing후 처리하는 부분
 			std::cout << c->buffer << std::endl;
 			(*parser).set_message(c->buffer);
 			(*parser).run_parsing();
-			print_parsed_data((*parser).get_start_line_map(), (*parser).get_header_map(), (*parser).get_entity_str());
+			//print_parsed_data((*parser).get_start_line_map(), (*parser).get_header_map(), (*parser).get_entity_str());
 
-			
 			// response 만들어서 send하는 부분
 			send(c->get_fd(), c->buffer, strlen(c->buffer), 0);
 			memset(c->buffer, 0, event_list[i].data);

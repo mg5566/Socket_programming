@@ -15,12 +15,17 @@ Request_Parse::~Request_Parse() {
 void Request_Parse::run_parsing(void) {
   // std::cout << "===test print origin message===" << std::endl;
   // std::cout << origin_message << std::endl;
+  /*
   std::vector<std::string> message_vector;
 
   message_vector = split_message(origin_message);  // start / header / body
-  parse_start_line(message_vector[0]);
-  parse_header(message_vector[1]);
-  parse_entity(message_vector[2]);
+  if (message_vector[0].empty() != true)
+    parse_start_line(message_vector[0]);
+  if (message_vector[1].empty() != true)
+    parse_header(message_vector[1]);
+  if (message_vector[2].empty() != true)
+    parse_entity(message_vector[2]);
+  */
 }
 
 /*
@@ -70,7 +75,7 @@ void Request_Parse::parse_start_line(std::string message) {
 // Accept-Charsets: value_1(,) value_2crlf
 // Accept-Length: value_1(,) value_2crlf
 // crlf
-// 
+//
 void Request_Parse::parse_header(std::string message) {
   std::size_t colon_pos = message.find(":");
   while (colon_pos != message.npos) {
@@ -91,15 +96,15 @@ void Request_Parse::parse_entity(std::string message) {
 }
 
 /* origin message 를 setting 하는 함수
-** 
+**
 ** setter 에 해당되는 기능입니다.
 */
-void Request_Parse::set_message(std::string buffer) {
+void Request_Parse::set_message(std::string const &buffer) {
   origin_message = buffer;
 }
 
 /* parsing 된 data 를 반환해주는 함수
-** 
+**
 ** getter 에 해당되는 기능
 */
 std::map<std::string, std::string> Request_Parse::get_start_line_map() {
