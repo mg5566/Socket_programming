@@ -26,6 +26,7 @@ char **init_envp() {
   temp[8] = strdup("REMOTE_IDENT=aaa");
   temp[9] = strdup("REMOTE_USER=aaa");
   temp[10] = strdup("REQUEST_METHOD=GET");
+  // temp[10] = strdup("REQUEST_METHOD=POST");
   temp[11] = strdup("REQUEST_URI=aaa");
   temp[12] = strdup("SCRIPT_NAME=aaa");
   temp[13] = strdup("SERVER_PROTOCOL=HTTP/1.1");
@@ -61,24 +62,22 @@ int main(int argc, char *argv[]) {
     test_print_array(envp);
     test_print_array(argv);
 
+    pipe(pipe_fd);
     pid = fork();
-    //pipe(pipe_fd);
-    //dup2(pipe_fd[1], 1);
     if (pid < 0)
       perror("fail fork process");
     else if (pid > 0) {
-      std::cout << "in parent" << std::endl;
-      waitpid(pid, NULL, 0);
-      std::cout << "done wait" << std::endl;
+      close(pipe_fd[1]);
+      //waitpid(pid, NULL, 0);
       ret = read(pipe_fd[0], buf, 3000);
       buf[ret] = '\0';
       std::cout << buf << std::endl;
     }
     else if (pid == 0) {
-      std::cout << "in child" << std::endl;
-      //if (execve("/usr/local/bin/php-cgi", ++argv, envp) == -1)
+      close(pipe_fd[0]);
+      dup2(pipe_fd[1], 1);
       execve("/usr/local/bin/php-cgi", ++argv, envp);
-      exit(0);
+      exit(1);  // exit(0) 로 하면 죽질 않네요..
     }
     close(pipe_fd[0]);
     close(pipe_fd[1]);
