@@ -19,7 +19,7 @@ char **init_envp() {
   temp[1] = strdup("CONTENT_LENGTH=300");
   temp[2] = strdup("CONTENT_TYPE=aa");
   temp[3] = strdup("GATEWAY_INTERFACE=aaa");
-  temp[4] = strdup("PATH_INFO=cgi_test");
+  temp[4] = strdup("PATH_INFO=php-cgi");
   temp[5] = strdup("PATH_TRANSLATED=aaa");
   temp[6] = strdup("QUERY_STRING=aaa");
   temp[7] = strdup("REMOTE_ADDR=aaa");
