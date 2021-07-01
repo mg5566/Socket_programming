@@ -19,7 +19,7 @@ void CGI::set_env(char **envp, int idx, std::string key, std::string value) {
 
   key += "=";
   key += value;
-  envp[idx] = memcpy(temp, key.c_str());
+  envp[idx] = strcpy(temp, key.c_str());
 }
 
 /*
@@ -50,10 +50,31 @@ void CGI::create_envp() {
   set_env(envp, 2, "CONTENT_TYPE", parsed_request_data.get_header["Content-Type"]);
   set_env(envp, 3, "GATEWAY_INTERFACE", "PHP/8.0");  // $ php-cgi -v 를 참고했습니다.
   set_env(envp, 4, "PATH_INFO", "php-cgi");  // 경로를 "/path/php-cgi" 이렇게 설정하면 되는 것 같습니다.
-  set_env(envp, 5, "PATH_TRANSLATED", "aaaa");  // 뭔지 감이 1도 안옴...
+  set_env(envp, 5, "PATH_TRANSLATED", "");  // 뭔지 감이 1도 안옴...
   // https://datatracker.ietf.org/doc/html/rfc3875#page-13 를 참고해봅시다.
-  set_evn(envp, 6, "QUERY_STRING", "aaaa");  // URL 에서 parsing 을 해야겠군요...
+  set_evn(envp, 6, "QUERY_STRING", parsed_request_data.get_entity_body);// URL 에서 parsing 을 해야겠군요...
   set_env(envp, 7, "REMOTE_ADDR", parsed_request_data.get_header["Host"]);  // 지금 127.0.0.1:<PORT> 가 나올텐데, <PORT> 를 제거해야할지도?!
-  set_env(envp, 8, "REMOTE_IDENT", parsed_request_data.get_header[""]);
-  set_env(envp, 0, "REQUEST_METHOD", parsed_request_data.get_heaher["Method"]);
+  set_env(envp, 8, "REMOTE_IDENT", "");  // client 의 host 이름
+  set_env(envp, 9, "REMOTE_USER", "");
+  set_env(envp, 10, "REQUEST_METHOD", parsed_request_data.get_heaher["Method"]);
+  set_env(envp, 11, "REQUEST_URI", "");
+  set_env(envp, 12, "SCRIPT_FILENAME", "");
+  set_env(envp, 13, "SERVER_NAME", parsed_request_data.get_header["Host"]);
+  set_env(envp, 14, "SERVER_PORT", "");
+  set_env(envp, 15, "SERVER_PROTOCOL", "HTTP/1.1");
+  set_env(envp, 16, "SERVER_SOFTWARE", "");
+}
+
+char ** CGI::get_env() {
+  return (envp);
+}
+
+void CGI::create_argv() {
+  // nginx conf 파일에서 가져와야하는 data 가 필요합니다.
+  // 일단  hard coding 을 하도록 하겠습니다.
+
+  char *temp;
+
+  argv[0] = strcpy(temp, "php-cgi");
+  // argv[1] = strcpy(temp, <file_fd>);
 }
