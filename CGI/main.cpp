@@ -17,7 +17,7 @@ char **init_envp() {
   temp[0] = strdup("AUTH_TYPE=aaa");
   std::cout << temp[0] << std::endl;  // 출력은 되는데, 왜 temp[0] arr[0] 는 안찍히는가?!
   temp[1] = strdup("CONTENT_LENGTH=300");
-  temp[2] = strdup("CONTENT_TYPE=aa");
+  temp[2] = strdup("CONTENT_TYPE=");
   temp[3] = strdup("GATEWAY_INTERFACE=aaa");
   temp[4] = strdup("PATH_INFO=php-cgi");
   temp[5] = strdup("PATH_TRANSLATED=aaa");

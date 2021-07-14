@@ -5,6 +5,8 @@
 
 #include <string>
 
+#define BUFFER_SIZE 1024
+
 class CGI {
   private:
     Request_Message parsed_request_data;
@@ -17,6 +19,7 @@ class CGI {
     int pipe_fd[2];
     pid_t pid;
     // result
+    char buf[BUFFER_SIZE];
     std::string result;
 
   public:
